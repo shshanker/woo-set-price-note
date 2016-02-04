@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Woo Floating Minicart
+ * Woo Set Price Note
  *
- * Allows user to get WooCommerce Floating Minicart.
+ * Allows user to get WooCommerce Set Price Note.
  *
  * @class   Woo_Set_Price_Note_Backend 
  */
@@ -31,15 +31,15 @@ class Woo_Set_Price_Note_Backend {
 	
 		// Actions
 		// Display Fields
-		add_action( 'woocommerce_product_options_pricing', array( $this, 'awspn_add_custom_general_fields') );	
+		add_action( 'woocommerce_product_options_pricing', array( $this, 'awspn_add_custom_general_field') );	
 		
 		// Save Fields
-		add_action( 'woocommerce_process_product_meta', array( $this, 'awspn_add_custom_general_fields_save') );
+		add_action( 'woocommerce_process_product_meta', array( $this, 'awspn_add_custom_general_field_save') );
 
 		
 		// Filters
 		// Add saved price note
-		add_filter( 'woocommerce_get_price_html', array( $this, 'awspn_display_price_note'), 100, 2 );
+		add_filter( 'woocommerce_get_price_html', array( $this, 'awspn_display_price_note'), 99, 2 );
 
 		
 	}
@@ -51,22 +51,10 @@ class Woo_Set_Price_Note_Backend {
 	 * @return void
 	 */
 
-	public static function awspn_add_custom_general_fields() {
-
-	  global $woocommerce, $post;
+	public static function awspn_add_custom_general_field() {
+	 
 	  
 	  echo '<div class="options_group">';
-
-			// Product per note text
-			woocommerce_wp_text_input( 
-				array( 
-					'id'          => 'awspn_product_price_note', 
-					'label'       => __( 'Price Note', 'woo-set-price-note' ), 
-					'placeholder' => 'Piece',
-					'desc_tip'    => 'true',
-					'description' => __( 'Enter price note that you want to display with product price, like, Offer, Piece, Pair, Dozen, Sqft, Ltr, etc.', 'woo-set-price-note' ) 
-				)
-			);
 
 			// Product per note separator 
 			woocommerce_wp_text_input( 
@@ -75,9 +63,22 @@ class Woo_Set_Price_Note_Backend {
 					'label'       => __( 'Note Separator', 'woo-set-price-note' ), 
 					'placeholder' => '/',
 					'desc_tip'    => 'true',
-					'description' => __( 'Enter note separator, like, "/", "-", "per", etc', 'woo-set-price-note' ) 
+					'description' => __( 'Enter separator between price and note, like, "/", "-", "per", etc', 'woo-set-price-note' ) 
 				)
 			);
+
+
+			// Product per note text
+			woocommerce_wp_text_input( 
+				array( 
+					'id'          => 'awspn_product_price_note', 
+					'label'       => __( 'Price Note', 'woo-set-price-note' ), 
+					'placeholder' => 'Piece',
+					'desc_tip'    => 'true',
+					'description' => __( 'Enter price note that you want to display with product price, like, Offer, Unit, Edition, etc.', 'woo-set-price-note' ) 
+				)
+			);
+
 
 	  
 	  echo '</div>';
@@ -91,31 +92,31 @@ class Woo_Set_Price_Note_Backend {
 	 * @return void
 	 */
 
-	public static function awspn_add_custom_general_fields_save( $post_id ){	
+	public static function awspn_add_custom_general_field_save( $post_id ){	
 		
 		
-		$price_note_text = $_POST['awspn_product_price_note'];
+		$price_note_text = sanitize_text_field($_POST['awspn_product_price_note']);
 
-		$price_note_separator = $_POST['awspn_product_price_note_separator'];
+		$price_note_separator = sanitize_text_field($_POST['awspn_product_price_note_separator']);
 
 		// Product per note text
 		if( !empty( $price_note_text ) ){
 
-			update_post_meta( $post_id, 'awspn_product_price_note', esc_attr( $price_note_text ) );
+			update_post_meta( $post_id, 'awspn_product_price_note',  $price_note_text  );
 		
 		}
 
 		// Product per note separator
 		if( !empty( $price_note_separator )  ){			
 
-			update_post_meta( $post_id, 'awspn_product_price_note_separator', esc_attr( $price_note_separator ) );
+			update_post_meta( $post_id, 'awspn_product_price_note_separator',  $price_note_separator  );
 		
 		}
 		
 	}
 
 	/**
-	 * Loading  price note options on WooCommerce section.
+	 * Loading  price note options on WooCommerce product section.
 	 *
 	 * @return string
 	 */
@@ -123,8 +124,8 @@ class Woo_Set_Price_Note_Backend {
 
 	public static function awspn_display_price_note( $price, $product ){
 	    
-	    $price_note_text = get_post_meta( $product->id, 'awspn_product_price_note', true ); 
-	    $price_note_separator = get_post_meta( $product->id, 'awspn_product_price_note_separator', true ); 
+	    $price_note_text = esc_attr( get_post_meta( $product->id, 'awspn_product_price_note', true ) ); 
+	    $price_note_separator = esc_attr( get_post_meta( $product->id, 'awspn_product_price_note_separator', true ) ); 
 	    
 	   
 	   

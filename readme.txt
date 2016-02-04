@@ -39,7 +39,7 @@ Contribution link: https://github.com/shshanker/woo-set-price-note
 * Go to specific woo-commerce product page.
 * Go to product data section and in general section you can find couple of extra fields.
 * Set your message and set separator between price and the message.
-* Update your post.
+* Update your product.
 * Enjoy your message.
 
 
